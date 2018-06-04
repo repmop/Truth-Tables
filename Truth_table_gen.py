@@ -56,12 +56,14 @@ def preProcess(s,varList):
     return s
 
 def primToTab(s):
-    s = s.replace(" ","")
+    if s=="":
+        return ([],[],"")
+    new = s.replace(" ","")
     #print("stripped: ",s)
-    varList = getVarsFromPrimExp(s)
+    varList = getVarsFromPrimExp(new)
     #print("varList: ",varList)
-    s = preProcess(s,varList)
-    #print("preProcessed: ",s)
+    new = preProcess(new,varList)
+    #print("preProcessed: ",new)
     (rows,cols) = dimFromVL(varList)
     tab = [[0]*cols]*rows
     for row in range(rows):
@@ -69,30 +71,32 @@ def primToTab(s):
         while(len(binStr)<cols-1):
             binStr = "0" + binStr
         vals = list(binStr)
-        out = evalPrimExp(s,varList,vals)
+        out = evalPrimExp(new,varList,vals)
         vals.append(str(out))
         tab[row] = vals
     return (tab,varList,s)
 
 def tabToStr(tup):
     (tab,varList,exp) = tup
+    if (exp==""):
+        return ""
     rows = len(tab)
     cols = len(tab[0])
-    out = ""
+    out = "\n"
     for var in varList:
         out += var
-    out += "|(" + exp +")\n"
+    out += "|(" + exp +") \n"
     for row in range(rows):
         for col in range(cols - 1):
             out += tab[row][col]
         out += "|"
-        out += tab[row][cols-1] + "\n"
+        out += tab[row][cols-1] + " \n"
     return out
 
 
     
     
-print(tabToStr(primToTab("g | ~(hj | k)")))
+#print(tabToStr(primToTab("g | ~(hj | k)")))
 
         
     
