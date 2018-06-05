@@ -1,14 +1,15 @@
 import string
-orToks = ["+","|","||"]
+orToks = ["+","|"]
 andToks = ["*","&"]
-negToks = ["~","!","¬"]
+negToks = ["!","~"]
 allowedChars = string.ascii_letters
-allowedChars = allowedChars.replace("a","")
-allowedChars = allowedChars.replace("n","")
-allowedChars = allowedChars.replace("d","")
+#allowedChars = allowedChars.replace("a","")
+#allowedChars = allowedChars.replace("n","")
+#allowedChars = allowedChars.replace("d","")
 def stringInsert (source_str, insert_str, pos):
     return source_str[:pos]+insert_str+source_str[pos:]
-
+#parse out the set of unique non-operator letters to determine
+#what should be varied for our tests.
 def getVarsFromPrimExp(s):
     vars = set()
     for c in s:
@@ -24,7 +25,9 @@ def dimFromVL(varList):
     cols = len(varList)
     rows = 2**(cols)
     return (rows,cols + 1)
-    
+
+#use textual replacement and eval()
+#to determine the expression's output for a given set of inputs.
 def evalPrimExp(s,varList,vals):
     for i in range(len(varList)):
         s = s.replace(varList[i],vals[i])
@@ -41,11 +44,12 @@ def evalPrimExp(s,varList,vals):
         raise Exception("Parse Error!")
     return out
     
-
+#Insert 'and' operators between all operators placed next to each other
+#To reflect standard SOP syntax in logic design.
 def preProcess(s,varList):
     if (len(s)<=1):
         return s
-    insert = " and "
+    insert = "*"
     i=0
     while(i<len(s)-1):
         #print("loop: ",s)
@@ -53,8 +57,18 @@ def preProcess(s,varList):
             s = stringInsert(s,insert,i+1)
             i+=len(insert)
         i+=1
+    for c in orToks:
+        s = s.replace(c,orToks[0])
+    for c in andToks:
+        s = s.replace(c,andToks[0])
+    for c in negToks:
+        s = s.replace(c,negToks[0])
     return s
 
+#Convert a primary expression to a truth table. A truth table
+#is a 2D list where the rows consist of each possible combination of the input
+#variables, and the columns describe the values used for each evaluation +
+#a final column with the output values. Column values are either "0" or "1".
 def primToTab(s):
     if s=="":
         return ([],[],"")
@@ -74,8 +88,12 @@ def primToTab(s):
         out = evalPrimExp(new,varList,vals)
         vals.append(str(out))
         tab[row] = vals
-    return (tab,varList,s)
+    return (tab,varList,new)
 
+#Convert a tuple returned by primToTab() to a string, consisting of substrings
+#of the form (binary number)|(0 or 1), seperated by newlines
+#indicating the values for each variable (left of |) used to evaluate the 
+#the input expression, and the expression's output value (right of |).
 def tabToStr(tup):
     (tab,varList,exp) = tup
     if (exp==""):
@@ -93,17 +111,22 @@ def tabToStr(tup):
         out += tab[row][cols-1] + " \n"
     return out
 
-
+def orOps():
+    orStr=""
+    for s in orToks:
+        orStr += s
+    return orStr
     
+def andOps():
+    andStr=""
+    for s in andToks:
+        andStr += s
+    return andStr
     
-#print(tabToStr(primToTab("g | ~(hj | k)")))
-
-        
-    
-    
-            
-        
-    
-
+def negOps():
+    negStr=""
+    for s in negToks:
+        negStr += s
+    return negStr
 
     
