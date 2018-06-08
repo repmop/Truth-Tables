@@ -1,11 +1,17 @@
 import flask
 import sys, os
-import Truth_table_gen as tt
+#sys.stderr.write("PATH PATH PATH: ")
+#for s in sys.path:
+#    sys.stderr.write(s)
+#sys.path.append("/var/www/faithinnothing.me/truthtables/truthtables")
+from truthtables import  tt
+
+
 app = flask.Flask(__name__)
-path = 'G:\\Scripts\\Truth-Tables\\'
+path = '/var/www/html/faithinnothing.me/truthtables/truthtables/'
 @app.route('/', methods=['POST', 'GET'])
 def enter(name=None):
-    indexpath = path + 'templates\index.html'
+    indexpath = path + 'templates/index.html'
     with open (path + 'temp.html', "r") as myfile:
         data=myfile.read()
     data = data.replace("OR",tt.orOps())
@@ -25,5 +31,5 @@ def handle(exp):
     except Exception as e:
         out = str(e)
     return out
-
-app.run(host= "localhost", port=5000, debug=True)
+if __name__=='__main__':
+    app.run(host= "127.0.1.1", port=5003, debug=True)
